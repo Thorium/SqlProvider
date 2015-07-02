@@ -179,6 +179,7 @@ type SqlTypeProvider(config: TypeProviderConfig) as this =
                 let relProps = 
                     let bts = baseTypes.Force()       
                     [ for r in children do               
+                       if bts.ContainsKey(r.ForeignTable) then
                         let (tt,_,_,_) = (bts.[r.ForeignTable])
                         let ty = typedefof<System.Linq.IQueryable<_>>
                         let ty = ty.MakeGenericType tt
@@ -192,6 +193,7 @@ type SqlTypeProvider(config: TypeProviderConfig) as this =
                         prop.AddXmlDoc(sprintf "Related %s entities from the foreign side of the relationship, where the primary key is %s and the foreign key is %s" r.ForeignTable r.PrimaryKey r.ForeignKey)
                         yield prop ] @
                     [ for r in parents do
+                       if bts.ContainsKey(r.PrimaryTable) then
                         let (tt,_,_,_) = (bts.[r.PrimaryTable])
                         let ty = typedefof<System.Linq.IQueryable<_>>
                         let ty = ty.MakeGenericType tt

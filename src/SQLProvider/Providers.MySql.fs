@@ -245,9 +245,9 @@ module MySql =
         match retCols with
         | [||] -> com.ExecuteNonQuery() |> ignore; Unit
         | [|retCol|] ->
-            use reader = com.ExecuteReader()
             match retCol.TypeMapping.ProviderTypeName with
             | Some "cursor" -> 
+                use reader = com.ExecuteReader()
                 let result = SingleResultSet(retCol.Name, Sql.dataReaderToArray reader)
                 reader.NextResult() |> ignore
                 result
@@ -282,7 +282,7 @@ type internal MySqlProvider(resolutionPath, owner, referencedAssemblies) as this
             MySql.connect con (fun con ->
                 use reader = MySql.executeSql (sprintf "select TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = '%s'" MySql.owner) con
                 [ while reader.Read() do 
-                    let table ={ Schema = reader.GetString(0); Name = reader.GetString(1); Type=reader.GetString(2) } 
+                    let table ={ Schema = reader.GetString(0).ToLower(); Name = reader.GetString(1).ToLower(); Type=reader.GetString(2).ToLower() } 
                     if tableLookup.ContainsKey table.FullName = false then tableLookup.Add(table.FullName,table)
                     yield table ])
 
@@ -311,7 +311,7 @@ type internal MySqlProvider(resolutionPath, owner, referencedAssemblies) as this
                                              AND c.TABLE_SCHEMA = pk.TABLE_SCHEMA
                                              AND c.TABLE_NAME = pk.TABLE_NAME
                                              AND c.COLUMN_NAME = pk.COLUMN_NAME
-                                 WHERE c.TABLE_SCHEMA = @schema AND c.TABLE_NAME = @table
+                                 WHERE LOWER(c.TABLE_SCHEMA) = @schema AND LOWER(c.TABLE_NAME) = @table
                                  ORDER BY c.TABLE_SCHEMA,c.TABLE_NAME, c.ORDINAL_POSITION"
                use com = (this:>ISqlProvider).CreateCommand(con,baseQuery)               
                com.Parameters.Add((this:>ISqlProvider).CreateCommandParameter(QueryParameter.Create("@schema", 0), table.Schema)) |> ignore
@@ -331,7 +331,8 @@ type internal MySqlProvider(resolutionPath, owner, referencedAssemblies) as this
                          if col.IsPrimarKey && pkLookup.ContainsKey table.FullName = false then pkLookup.Add(table.FullName,col.Name)
                          yield col 
                       | _ -> ()]  
-               columnLookup.Add(table.FullName,columns)
+               if not(columns.IsEmpty) then
+                   columnLookup.Add(table.FullName,columns)
                con.Close()
                columns
         member __.GetRelationships(con,table) = 
