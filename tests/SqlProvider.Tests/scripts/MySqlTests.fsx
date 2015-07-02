@@ -68,7 +68,7 @@ let topSales5ByCommission =
     |> Seq.map (fun e -> e.MapTo<Employee>())
     |> Seq.toList
 
-#r @"..\..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll"
+#r @"../../../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
 
 open Newtonsoft.Json
 
