@@ -64,6 +64,21 @@ module ConfigHelpers =
             | None -> None
         else Some(connectionString)
 
+    let parseConnectionString conn =
+        let isMono = (Type.GetType "Mono.Runtime") <> null
+        let builder = System.Data.Common.DbConnectionStringBuilder()
+        builder.ConnectionString <- conn
+        match builder.ContainsKey "data source" with
+        | false -> conn
+        | true ->
+            let ds = builder.["data source"].ToString()
+            if isMono then
+                builder.["data source"] <- ds.Replace(@"\", "/")
+            else
+                builder.["data source"] <- ds.Replace("/", @"\")
+            builder.ConnectionString
+
+
 module internal SchemaProjections = 
     
     //Creatviely taken from FSharp.Data (https://github.com/fsharp/FSharp.Data/blob/master/src/CommonRuntime/NameUtils.fs)

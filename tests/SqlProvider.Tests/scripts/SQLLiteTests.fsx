@@ -4,7 +4,7 @@ open System
 open FSharp.Data.Sql
 
 [<Literal>]
-let connectionString = @"Data Source=" + __SOURCE_DIRECTORY__ + @"\northwindEF.db;Version=3"
+let connectionString = @"Data Source=" + __SOURCE_DIRECTORY__ + @"\..\db\northwindEF.db;Version=3"
 
 [<Literal>]
 let resolutionPath = __SOURCE_DIRECTORY__ + "\..\libs"

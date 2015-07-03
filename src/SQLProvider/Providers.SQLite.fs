@@ -84,7 +84,9 @@ type internal SQLiteProvider(resolutionPath, referencedAssemblies, runtimeAssemb
                 if String.IsNullOrEmpty(resolutionPath) || resolutionPath = @"\"
                 then runtimeAssembly
                 else resolutionPath
-            let connectionString = connectionString.Replace(@".\", basePath + @"\")
+            let connectionString = 
+                connectionString.Replace(@".\", basePath + @"\") 
+                |> ConfigHelpers.parseConnectionString
             Activator.CreateInstance(connectionType,[|box connectionString|]) :?> IDbConnection
         member __.CreateCommand(connection,commandText) = Activator.CreateInstance(commandType,[|box commandText;box connection|]) :?> IDbCommand
         member __.CreateCommandParameter(param,value) = 
