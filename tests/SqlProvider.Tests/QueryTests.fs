@@ -8,7 +8,7 @@ open NUnit.Framework
 [<Literal>]
 let connectionString = @"Data Source=" + __SOURCE_DIRECTORY__ + "/db/northwindEF.db; Version = 3; Read Only=true; FailIfMissing=True;"
 [<Literal>]
-let resolutionPath = __SOURCE_DIRECTORY__ + "\libs"
+let resolutionPath = __SOURCE_DIRECTORY__ + @"\libs"
 
 type sql = SqlDataProvider<Common.DatabaseProviderTypes.SQLITE, connectionString,  ResolutionPath = resolutionPath>
 FSharp.Data.Sql.Common.QueryEvents.SqlQueryEvent |> Event.add (printfn "Executing SQL: %s")
