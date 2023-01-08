@@ -22,11 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="AdventureWorks_SSDT.dacpac" />
+    <None Include="AdventureWorks_SSDT.dacpac">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="..\..\..\..\src\SQLProvider.Runtime\Ssdt.DacpacParser.fs" Link="Ssdt.DacpacParser.fs" />
     <Compile Include="UnzipTests.fs" />
     <Compile Include="ParseSchemaTests.fs" />
     <Compile Include="TypeAnnotationTests.fs" />
+    <Compile Include="UserDefinedDataTypes.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
